@@ -13,7 +13,7 @@ def new_graph(file):
 	return load_graph(path)
 
 def draw_graph(g, name):
-	name = name +".png"
+	name = name +".pdf"
 	graph_draw(g, vertex_text=g.vertex_index, vertex_font_size=14, output_size=(800, 800), output=name)	
 	
 def get_vertices_degree(g):
@@ -65,6 +65,7 @@ def closeness_measures(g):
 	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (c.a.mean(), c.a.std()))
 	print("   Mediana: %f" % median(c.a))
 	print "\n"
+	plot_graph_closeness(g, "lesmis")
 	
 def eigenvector_measures(g):
 	print("-- Eigenvector: ")
@@ -83,12 +84,35 @@ def katz_measures(g):
 	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (x.a.mean(), x.a.std()))
 	print("   Mediana: %f" % median(x.a))
 	print "\n"
+
+def cluster_measures(g):
+	print("-- Clusterizacao Local: ")
+	x = local_clustering(g)
+	print("   Maximo: %f" % x.a.max())
+	print("   Minimo: %f" % x.a.min())
+	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (x.a.mean(), x.a.std()))
+	print("   Mediana: %f" % median(x.a))
+	print "\n"	
+	
+	print("-- Clusterizacao Global: ")
+	c = global_clustering(g)
+	print("   Coeficiente global de clusterizacao: %f" % c[0])
+	print("   Desvio Padrao: %f" % c[1])
+	print "\n"
+	
 	
 def plot_graph_betweeness(g):
+	name = name + "_betweenness.pdf"
 	g = GraphView(g, vfilt=label_largest_component(g))
 	vp, ep = betweenness(g)
-	graph_draw(g, vertex_fill_color=vp, vertex_size=prop_to_size(vp, mi=5, ma=15), vcmap=matplotlib.cm.gist_heat, vorder=vp, output="lesmis_betweenness.pdf")
+	graph_draw(g, vertex_fill_color=vp, vertex_size=prop_to_size(vp, mi=5, ma=15), vcmap=matplotlib.cm.gist_heat, vorder=vp, output=name)
 	
+def plot_graph_closeness(g, name):
+	name = name + "_closeness.pdf"
+	g = GraphView(g, vfilt=label_largest_component(g))
+	c = closeness(g)
+	graph_draw(g, vertex_fill_color=c, vertex_size=prop_to_size(c, mi=5, ma=15), vcmap=matplotlib.cm.gist_heat, vorder=c, output=name)
+
 def central_measure(degrees, n_vertices):
 	c = []
 	for d in degrees:
@@ -100,13 +124,17 @@ def main():
 	print "Graph: LES_MISERABLES\n"
 	print("   Numero de vertices: %d" % g.num_vertices())
 	print("   Numero de arestas: %d" % g.num_edges())
+	print("   Densidade: %3f" % (g.num_edges()/(g.num_vertices()-1)))
+	dist, ends = pseudo_diameter(g)
+	print("   Diametro: %3f " % dist)
 	print("\n")
 	
 	#degree_measures(g)
 	#betweeness_measures(g)
 	#closeness_measures(g)
 	#eigenvector_measures(g)
-	katz_measures(g)
+	#katz_measures(g)
+	#cluster_measures(g)
 	
 main()
 
