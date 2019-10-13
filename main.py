@@ -66,6 +66,23 @@ def closeness_measures(g):
 	print("   Mediana: %f" % median(c.a))
 	print "\n"
 	
+def eigenvector_measures(g):
+	print("-- Eigenvector: ")
+	ee, x = eigenvector(g)
+	print("   Maximo: %f" % x.a.max())
+	print("   Minimo: %f" % x.a.min())
+	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (x.a.mean(), x.a.std()))
+	print("   Mediana: %f" % median(x.a))
+	print "\n"
+
+def katz_measures(g):
+	print("-- Katz: ")
+	x = katz(g)
+	print("   Maximo: %f" % x.a.max())
+	print("   Minimo: %f" % x.a.min())
+	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (x.a.mean(), x.a.std()))
+	print("   Mediana: %f" % median(x.a))
+	print "\n"
 	
 def plot_graph_betweeness(g):
 	g = GraphView(g, vfilt=label_largest_component(g))
@@ -87,8 +104,9 @@ def main():
 	
 	#degree_measures(g)
 	#betweeness_measures(g)
-	
-	closeness_measures(g)
+	#closeness_measures(g)
+	#eigenvector_measures(g)
+	katz_measures(g)
 	
 main()
 
