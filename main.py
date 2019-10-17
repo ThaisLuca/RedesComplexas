@@ -1,12 +1,17 @@
 
 from __future__ import division
 from graph_tool.all import *
+from collections import Counter
 import os, sys
 from pylab import *
 import numpy as np
 
 LES_MISERABLES="/lesmis/lesmis.gml"
+
 POLITICAL_BLOGS="/polblogs/polblogs.gml"
+POWER="/power/power.gml"
+COND_MAT_2005="/cond-mat-2005/cond-mat-2005.gml"
+ASTRO_PH="/astro-ph/astro-ph.gml"
 
 def new_graph(file):
 	path = os.getcwd() + "/datasets" + file
@@ -14,7 +19,7 @@ def new_graph(file):
 
 def draw_graph(g, name):
 	name = name +".pdf"
-	graph_draw(g, vertex_text=g.vertex_index, vertex_font_size=14, output_size=(800, 800), output=name)	
+	graph_draw(g, vertex_text=g.vertex_index, vertex_font_size=10, output_size=(800, 800), output=name)	
 	
 def get_vertices_degree(g):
 	degrees = []
@@ -44,97 +49,66 @@ def degree_measures(g):
 	print("   Centralidade media (media = %.3f, desvio padrao = %.3f)" % (np.mean(cent), np.std(cent)))
 	print("   Mediana: %f" % median(cent))
 	print "\n"
-	#plot_vertex_central(cent, "lemis")
+		
+#Consertar
+def get_components(g):
+	comp, hist = label_components(g, attractors=True)
+	return Counter(comp)
 	
-def betweeness_measures(g):
-	print("-- Betweeness: ")
-	bv, be = betweenness(g)
-	print("   Maximo: %f" % bv.a.max())
-	print("   Minimo: %f" % bv.a.min())
-	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (bv.a.mean(), bv.a.std()))
-	print("   Mediana: %f" % median(bv.a))
-	print "\n"
-	#plot_betweness_hist(bv, "lemis")
-	plot_graph_betweeness(g)
-	
-def closeness_measures(g):
-	print("-- Closeness: ")
-	c = closeness(g)
-	print("   Maximo: %f" % c.a.max())
-	print("   Minimo: %f" % c.a.min())
-	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (c.a.mean(), c.a.std()))
-	print("   Mediana: %f" % median(c.a))
-	print "\n"
-	plot_graph_closeness(g, "lesmis")
-	
-def eigenvector_measures(g):
-	print("-- Eigenvector: ")
-	ee, x = eigenvector(g)
-	print("   Maximo: %f" % x.a.max())
-	print("   Minimo: %f" % x.a.min())
-	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (x.a.mean(), x.a.std()))
-	print("   Mediana: %f" % median(x.a))
-	print "\n"
-
-def katz_measures(g):
-	print("-- Katz: ")
-	x = katz(g)
-	print("   Maximo: %f" % x.a.max())
-	print("   Minimo: %f" % x.a.min())
-	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (x.a.mean(), x.a.std()))
-	print("   Mediana: %f" % median(x.a))
-	print "\n"
-
-def cluster_measures(g):
-	print("-- Clusterizacao Local: ")
-	x = local_clustering(g)
-	print("   Maximo: %f" % x.a.max())
-	print("   Minimo: %f" % x.a.min())
-	print("   Betweeness media (media = %.3f, desvio padrao = %.3f)" % (x.a.mean(), x.a.std()))
-	print("   Mediana: %f" % median(x.a))
-	print "\n"	
-	
-	print("-- Clusterizacao Global: ")
-	c = global_clustering(g)
-	print("   Coeficiente global de clusterizacao: %f" % c[0])
-	print("   Desvio Padrao: %f" % c[1])
-	print "\n"
-	
-	
-def plot_graph_betweeness(g):
-	name = name + "_betweenness.pdf"
-	g = GraphView(g, vfilt=label_largest_component(g))
-	vp, ep = betweenness(g)
-	graph_draw(g, vertex_fill_color=vp, vertex_size=prop_to_size(vp, mi=5, ma=15), vcmap=matplotlib.cm.gist_heat, vorder=vp, output=name)
-	
-def plot_graph_closeness(g, name):
-	name = name + "_closeness.pdf"
-	g = GraphView(g, vfilt=label_largest_component(g))
-	c = closeness(g)
-	graph_draw(g, vertex_fill_color=c, vertex_size=prop_to_size(c, mi=5, ma=15), vcmap=matplotlib.cm.gist_heat, vorder=c, output=name)
 
 def central_measure(degrees, n_vertices):
 	c = []
 	for d in degrees:
-		c.append(d/(n_vertices-1))
+		c.append(d/(10-1))
 	return c
 
+def print_stats(x):
+	print("   Maximo: %f" % x.a.max())
+	print("   Minimo: %f" % x.a.min())
+	print("   Media (media = %.3f, desvio padrao = %.3f)" % (x.a.mean(), x.a.std()))
+	print("   Mediana: %f" % median(x.a))
+	print "\n"
+
 def main():
-	g = new_graph(LES_MISERABLES)
-	print "Graph: LES_MISERABLES\n"
+	g = new_graph(POLITICAL_BLOGS)
+	print("Graph: POLITICAL_BLOGS\n")
 	print("   Numero de vertices: %d" % g.num_vertices())
 	print("   Numero de arestas: %d" % g.num_edges())
-	print("   Densidade: %3f" % (g.num_edges()/(g.num_vertices()-1)))
+	print("   Densidade: %3f" % (2*g.num_edges()/(g.num_vertices()*g.num_vertices()-g.num_vertices())))
 	dist, ends = pseudo_diameter(g)
 	print("   Diametro: %3f " % dist)
+
 	print("\n")
 	
+	degree_measures(g)
+	
+	#print("-- Betweeness: ")
+	#bv, be = betweenness(g)
+	#print_stats(bv)
+	
+	#print("-- Closeness: ")
+	#print_stats(closeness(g))
+	
+	#print("-- Katz:")
+	#print_stats(katz(g))
+	
+	#print("-- Autovetor: ")
+	#ee, x = eigenvector(g)
+	#print_stats(x)
+	
+	#print("-- Clusterizacao Local: ")
+	#print_stats(local_clustering(g))
+	
+	#print("-- PageRank: ")
+	#print_stats(pagerank(g))
+	
+	#print("-- Clusterizacao Global: ")
+	#c = global_clustering(g)
+	#print("   Coeficiente global de clusterizacao: %f" % c[0])
+	#print("   Desvio Padrao: %f" % c[1])
+	#print "\n"
+	
 	#degree_measures(g)
-	#betweeness_measures(g)
-	#closeness_measures(g)
-	#eigenvector_measures(g)
-	#katz_measures(g)
-	#cluster_measures(g)
 	
 main()
 
@@ -156,4 +130,9 @@ def plot_vertex_hist(g, name):
 	tight_layout()
 	name = name + "-deg-dist.pdf"
 	savefig(name)
+	
+def plot_graph_metrics(g, x, name, metric):
+	name = name + "_" + metric + ".pdf"
+	g = GraphView(g, vfilt=label_largest_component(g))
+	graph_draw(g, vertex_fill_color=x, vertex_size=prop_to_size(x, mi=5, ma=15), vcmap=matplotlib.cm.gist_heat, vorder=x, output=name)
 
