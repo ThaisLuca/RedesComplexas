@@ -5,6 +5,7 @@ from collections import Counter
 import os, sys
 from pylab import *
 import numpy as np
+import matplotlib.pyplot as plt
 
 LES_MISERABLES="/lesmis/lesmis.gml"
 
@@ -12,6 +13,38 @@ POLITICAL_BLOGS="/polblogs/polblogs.gml"
 POWER="/power/power.gml"
 COND_MAT_2005="/cond-mat-2005/cond-mat-2005.gml"
 ASTRO_PH="/astro-ph/astro-ph.gml"
+
+def plot(data,filename,degreetype):
+    """ Plot Distribution """
+    plt.plot(range(len(data)),data,'bo')
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.ylabel('Freq')
+    plt.xlabel('Degree')
+    plt.savefig(filename + '_' + degreetype + '_distribution.pdf', bbox_inches="tight")
+    plt.clf()
+
+    """ Plot CDF """
+    s = float(data.sum())
+    cdf = data.cumsum(0)/s
+#    plt.plot(range(len(cdf)),cdf,'bo')
+#    plt.xscale('log')
+#    plt.ylim([0,1])
+#    plt.ylabel('CDF')
+#    plt.xlabel('Degree')
+#    plt.savefig(filename + '_' + degreetype + '_cdf.pdf')
+#    plt.clf()
+
+    """ Plot CCDF """
+    ccdf = 1-cdf
+    plt.plot(range(len(ccdf)),ccdf,'bo')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.ylim([0,1])
+    plt.ylabel('CCDF')
+    plt.xlabel('Degree')
+    plt.savefig(filename + '_' + degreetype + '_ccdf.pdf', bbox_inches="tight")
+    plt.clf()
 
 def new_graph(file):
 	path = os.getcwd() + "/datasets" + file
@@ -41,6 +74,10 @@ def degree_measures(g):
 	print("   Mediana: %d" % median(degrees))
 	print "\n"
 	#plot_vertex_hist(g, "lemis")
+
+	#indegree_distribution = np.bincount(degrees)
+
+	#plot(indegree_distribution, "teste", 'totaldegree')
 	
 	print("-- Centralidade de Grau: ")
 	cent = central_measure(degrees, g.num_vertices())
@@ -70,8 +107,9 @@ def print_stats(x):
 	print "\n"
 
 def main():
-	g = new_graph(POLITICAL_BLOGS)
-	print("Graph: POLITICAL_BLOGS\n")
+	g = new_graph(ASTRO_PH)
+	print(g.is_directed())
+	print("Graph: ASTRO_PH\n")
 	print("   Numero de vertices: %d" % g.num_vertices())
 	print("   Numero de arestas: %d" % g.num_edges())
 	print("   Densidade: %3f" % (2*g.num_edges()/(g.num_vertices()*g.num_vertices()-g.num_vertices())))
@@ -82,55 +120,34 @@ def main():
 	
 	degree_measures(g)
 	
-	#print("-- Betweeness: ")
-	#bv, be = betweenness(g)
-	#print_stats(bv)
+	print("-- Betweeness: ")
+	bv, be = betweenness(g)
+	print_stats(bv)
 	
-	#print("-- Closeness: ")
-	#print_stats(closeness(g))
+	print("-- Closeness: ")
+	print_stats(closeness(g))
 	
-	#print("-- Katz:")
-	#print_stats(katz(g))
+	print("-- Katz:")
+	print_stats(katz(g))
 	
-	#print("-- Autovetor: ")
-	#ee, x = eigenvector(g)
-	#print_stats(x)
+	print("-- Autovetor: ")
+	ee, x = eigenvector(g)
+	print_stats(x)
 	
-	#print("-- Clusterizacao Local: ")
-	#print_stats(local_clustering(g))
+	print("-- Clusterizacao Local: ")
+	print_stats(local_clustering(g))
 	
-	#print("-- PageRank: ")
-	#print_stats(pagerank(g))
+	print("-- PageRank: ")
+	print_stats(pagerank(g))
 	
-	#print("-- Clusterizacao Global: ")
-	#c = global_clustering(g)
-	#print("   Coeficiente global de clusterizacao: %f" % c[0])
-	#print("   Desvio Padrao: %f" % c[1])
-	#print "\n"
-	
-	#degree_measures(g)
+	print("-- Clusterizacao Global: ")
+	c = global_clustering(g)
+	print("   Coeficiente global de clusterizacao: %f" % c[0])
+	print("   Desvio Padrao: %f" % c[1])
+	print "\n"
 	
 main()
 
-def plot_vertex_hist(g, name):
-	in_hist = vertex_hist(g, "total")
-	y = in_hist[0]
-	err = sqrt(in_hist[0])
-	err[err >= y] = y[err >= y] - 1e-2
-
-	figure(figsize=(6,4))
-	errorbar(in_hist[1][:-1], in_hist[0], fmt="o", yerr=err, label="in")
-	gca().set_yscale("log")
-	gca().set_xscale("log")
-	gca().set_ylim(1e-1, 1e5)
-	gca().set_xlim(0.8, 1e3)
-	subplots_adjust(left=0.2, bottom=0.2)
-	xlabel("$k$")
-	ylabel("$NP(k)$")
-	tight_layout()
-	name = name + "-deg-dist.pdf"
-	savefig(name)
-	
 def plot_graph_metrics(g, x, name, metric):
 	name = name + "_" + metric + ".pdf"
 	g = GraphView(g, vfilt=label_largest_component(g))
