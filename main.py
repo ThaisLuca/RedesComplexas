@@ -3,24 +3,17 @@ from __future__ import division
 from graph_tool.all import *
 from collections import Counter
 import os, sys
-from pylab import *
 import numpy as np
-import matplotlib
-matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import math
-import random as rd
-
-
-LES_MISERABLES="/lesmis/lesmis.gml"
 
 POLITICAL_BLOGS="/polblogs/polblogs.gml"
 POWER="/power/power.gml"
 ASTRO_PH="/astro-ph/astro-ph.gml"
 INTERNET="/internet/internet.gml"
 
-def plot_distribution(graph, all_measure, xlabel, filename, metric='degree'):
-    freq = freq_relative(graph, all_measure, metric)
+def plot_distribution(g, data, xlabel, filename, metric='degree'):
+    freq = freq_relative(g, data, metric)
     plt.xscale('log')
     plt.yscale('log')
     plt.ylabel('CDF')
@@ -30,31 +23,31 @@ def plot_distribution(graph, all_measure, xlabel, filename, metric='degree'):
     plt.clf()
 
 
-def plot_ccdf(graph, all_measure, xlabel, filename, metric='degree'):
-    _ccdf = ccdf(graph, all_measure, metric)
+def plot_ccdf(g, data, xlabel, filename, metric='degree'):
+    _ccdf = ccdf(g, data, metric)
     plt.xscale('log')
     plt.yscale('log')
     plt.ylabel('CCDF')
-    plt.xlabel(xlabel
+    plt.xlabel(xlabel)
     plt.plot(range(len(_ccdf)), _ccdf, 'o', clip_on=False)
     plt.savefig('graficos/'+filename+'_ccdf.jpg')
     plt.clf()
 
     
-def freq_relative(graph, all_measure, metric='Degree'):
+def freq_relative(g, data, metric='Degree'):
     if metric == 'Degree':
-        degree_distribution = np.bincount(list(all_measure))
-        return degree_distribution/len(graph.get_vertices())
+        degree_distribution = np.bincount(list(data))
+        return degree_distribution/g.num_vertices()
     elif metric == 'Distance':
-        distance_distribution = np.bincount(list(all_measure))
-        return distance_distribution/comb(get_num_vertex(graph), 2)
+        distance_distribution = np.bincount(list(data))
+        return distance_distribution/comb(g.num_vertices(g), 2)
     else:
-        all_measure = np.array(all_measure)
-        all_sum = float(all_measure.sum())
-        return all_measure.cumsum(0)/all_sum  
+        data = np.array(data)
+        all_sum = float(data.sum())
+        return data.cumsum(0)/all_sum  
 
-def ccdf(graph, all_measure, metric='degree'):
-    return 1 - freq_relative(graph, all_measure, metric)
+def ccdf(graph, data, metric='degree'):
+    return 1 - freq_relative(graph, data, metric)
 	
 def new_graph(file):
 	path = os.getcwd() + "/datasets" + file
@@ -86,10 +79,10 @@ def degree_measures(g):
 
 def get_distances(g):
 	
-	source = np.random.randint(low=0,high=len(g.get_vertices()), size=100)
+	source = np.random.randint(low=0,high=g.num_vertices(), size=100)
  	dist = []
  	for source in source:
-  		target_vertex = np.random.randint(low=0,high=len(g.get_vertices()), size=100)
+  		target_vertex = np.random.randint(low=0,high=g.num_vertices(), size=100)
   		for target in target_vertex:
   			a = shortest_distance(g, source, target=target)
   			if not(a == 0 or isinf(a)):
@@ -207,9 +200,3 @@ def main():
 	print("   Coeficiente global de clusterizacao: %f" % c[0])
 	print("   Desvio Padrao: %f" % c[1])
 	print("\n")
-
-def plot_graph_metrics(g, x, name, metric):
-	name = name + "_" + metric + ".pdf"
-	g = GraphView(g, vfilt=label_largest_component(g))
-	graph_draw(g, vertex_fill_color=x, vertex_size=prop_to_size(x, mi=5, ma=15), vcmap=matplotlib.cm.gist_heat, vorder=x, output=name)
-
