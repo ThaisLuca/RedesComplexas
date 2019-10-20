@@ -46,8 +46,8 @@ def freq_relative(g, data, metric='Degree'):
         all_sum = float(data.sum())
         return data.cumsum(0)/all_sum  
 
-def ccdf(graph, data, metric='degree'):
-    return 1 - freq_relative(graph, data, metric)
+def ccdf(g, data, metric='degree'):
+    return 1 - freq_relative(g, data, metric)
 	
 def new_graph(file):
 	path = os.getcwd() + "/datasets" + file
