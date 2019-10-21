@@ -134,13 +134,13 @@ def main():
 	print("   Diametro: %3f " % dist)
 	
 	all_dist = get_distances(g)
-	plot_distribution(g, all_dist, "Distancia", "political_blogs_distancias", 'Distance')
-	plot_ccdf(g, all_dist, "Distancia", "political_blogs_distancias", 'Distance')	
+	plot_distribution(g, all_dist, "Distancia", "internet_distancias", 'Distance')
+	plot_ccdf(g, all_dist, "Distancia", "internet_distancias", 'Distance')	
 
 	print("\n")
 	
-	plot_distribution(g, degree_measures(g), "Grau", "astro_graus")
-	plot_ccdf(g, degree_measures(g), "Grau", "political_blogs_entrada")
+	plot_distribution(g, degree_measures(g), "Grau", "internet_graus")
+	plot_ccdf(g, degree_measures(g), "Grau", "internet_graus")
 	degree_measures(g)
 	
 	print("-- Betweeness: ")
@@ -150,7 +150,7 @@ def main():
 		if isnan(v): all_.append(0)
 		else: all_.append(v)
 	print_stats(all_)
-	plot_distribution(g, all_, "Betweeness", "astro_betweeness", metric='betweeness')
+	plot_distribution(g, all_, "Betweeness", "internet_betweeness", metric='betweeness')
 	plot_ccdf(g, all_, "Betweeness", "internet_betweeness", metric='betweeness')
 	return
 	
@@ -161,8 +161,8 @@ def main():
 		if isnan(v): all_c.append(0)
 		else: all_c.append(v)
 	print_stats(all_c)
-	plot_distribution(g, all_c, "Closeness", "astro_closeness", metric='closeness')
-	plot_ccdf(g, all_c, "Closeness", "astro_closeness", metric='closeness')
+	plot_distribution(g, all_c, "Closeness", "internet_closeness", metric='closeness')
+	plot_ccdf(g, all_c, "Closeness", "internet_closeness", metric='closeness')
 	
 	print("-- Katz:")
 	k = katz(g)
@@ -171,8 +171,8 @@ def main():
 		if isnan(v): all_k.append(0)
 		else: all_k.append(v)
 	print_stats(all_k)
-	plot_distribution(g, all_k, "Katz", "astro_katz", metric='katz')
-	plot_ccdf(g, all_k, "Katz", "astro_katz", metric='katz')
+	plot_distribution(g, all_k, "Katz", "internet_katz", metric='katz')
+	plot_ccdf(g, all_k, "Katz", "internet_katz", metric='katz')
 	
 	
 	print("-- Autovetor: ")
@@ -182,8 +182,8 @@ def main():
 		if isnan(v): all_x.append(0)
 		else: all_x.append(v)
 	print_stats(all_x)
-	plot_distribution(g, all_x, "Centralidade de Autovetor", "astro_autovetor", metric='autovetor')
-	plot_ccdf(g, all_x, "Autovetor", "astro_autovetor", metric='autovetor')
+	plot_distribution(g, all_x, "Centralidade de Autovetor", "internet_autovetor", metric='autovetor')
+	plot_ccdf(g, all_x, "Autovetor", "internet_autovetor", metric='autovetor')
 	
 	print("-- Clusterizacao Local: ")
 	all_cl = []
@@ -192,8 +192,8 @@ def main():
 		if isnan(v): all_cl.append(0)
 		else: all_cl.append(v)
 	print_stats(all_cl)
-	plot_distribution(g, all_cl, "Clusterizacao Local", "astro_clus_local", metric='cluster')
-	plot_ccdf(g, all_cl, "Clusterizacao Local", "astro_clus_local", metric='cluster')
+	plot_distribution(g, all_cl, "Clusterizacao Local", "internet_clus_local", metric='cluster')
+	plot_ccdf(g, all_cl, "Clusterizacao Local", "internet_clus_local", metric='cluster')
 	
 	print("-- Clusterizacao Global: ")
 	c = global_clustering(g)
